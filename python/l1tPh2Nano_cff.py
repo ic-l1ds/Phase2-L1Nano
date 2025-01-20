@@ -16,6 +16,20 @@ def addPh2L1Objects(process):
     process.l1tPh2NanoTask.add(p2L1TablesTask)
     return process
 
+### Reco Jets
+from PhysicsTools.NanoAOD.jetsAK4_Puppi_cff import *
+def add_puppi_jets(process):
+    jetPuppiTable.src = cms.InputTag("finalJetsPuppi")
+    for var in ["nMuons", "muonIdx1", "muonIdx2", "electronIdx1", "electronIdx2", "nElectrons", "svIdx1", "svIdx2", "nSVs"]:
+        delattr(jetPuppiTable.variables, var)
+    
+    process.l1tPh2NanoTask.add(jetPuppiTask)
+    process.l1tPh2NanoTask.add(jetPuppiForMETTask)
+    jetPuppiTablesTask = cms.Task(jetPuppiTable)
+    process.l1tPh2NanoTask.add(jetPuppiTablesTask)
+
+
+
 #### GENERATOR INFO
 ## based on https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/nanogen_cff.py#L2-L36
 from PhysicsTools.NanoAOD.genparticles_cff import * ## for GenParts
@@ -68,6 +82,7 @@ def addFullPh2L1Nano(process):
     addGenObjects(process)
     addPh2L1Objects(process)
     addPh2GTObjects(process)
+    add_puppi_jets(process)
 
     return process
 
