@@ -22,12 +22,22 @@ def add_puppi_jets(process):
     jetPuppiTable.src = cms.InputTag("finalJetsPuppi")
     for var in ["nMuons", "muonIdx1", "muonIdx2", "electronIdx1", "electronIdx2", "nElectrons", "svIdx1", "svIdx2", "nSVs"]:
         delattr(jetPuppiTable.variables, var)
-    
+
     process.l1tPh2NanoTask.add(jetPuppiTask)
     process.l1tPh2NanoTask.add(jetPuppiForMETTask)
     jetPuppiTablesTask = cms.Task(jetPuppiTable)
     process.l1tPh2NanoTask.add(jetPuppiTablesTask)
 
+### Reco Taus
+from PhysicsTools.NanoAOD.taus_cff import *
+def add_taus(process):
+    tauTable.src = cms.InputTag("finalTaus")
+    for var in ["jetIdx", "eleIdx", "muIdx", "svIdx1", "svIdx2", "nSVs"]:
+        delattr(tauTable.variables, var)
+
+    process.l1tPh2NanoTask.add(finalTaus)
+    tauTablesTask = cms.Task(tauTable)
+    process.l1tPh2NanoTask.add(tauTablesTask)
 
 
 #### GENERATOR INFO
@@ -36,7 +46,7 @@ from PhysicsTools.NanoAOD.genparticles_cff import * ## for GenParts
 from PhysicsTools.NanoAOD.jetMC_cff import * ## for GenJets
 from PhysicsTools.NanoAOD.met_cff import metMCTable ## for GenMET
 from PhysicsTools.NanoAOD.globals_cff import puTable ## for PU
-from PhysicsTools.NanoAOD.taus_cff import * ## for Gen taus
+#from PhysicsTools.NanoAOD.taus_cff import * ## for Gen taus
 def addGenObjects(process):
 
     ## add more GenVariables
@@ -48,13 +58,13 @@ def addGenObjects(process):
     genParticleTable.variables.dXY = Var("-vertex().x() * sin(phi()) + vertex().y() * cos(phi())", float, "dXY")
 
     ## add pruned gen particles a la Mini
-    if False: 
-        ## Gen all 
-        # genParticleTable.src = "genParticles" # see 
+    if False:
+        ## Gen all
+        # genParticleTable.src = "genParticles" # see
         ## Mini default, see  https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/PatAlgos/python/slimming/prunedGenParticles_cfi.py
         # genParticleTable.src = "prunedGenParticles"
         ## Nano default, see https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/genparticles_cff.py#L8
-        # genParticleTable.src = "finalGenParticles" 
+        # genParticleTable.src = "finalGenParticles"
 
         process.prunedGenParticleTable = genParticleTable.clone()
         process.prunedGenParticleTable.src = "prunedGenParticles"
@@ -71,18 +81,28 @@ def addGenObjects(process):
                 genParticleTask, genParticleTablesTask,
                 genTauTask,
     )
-    
+
     # add all GenJets: AK4 and AK8
     process.l1tPh2NanoTask.add(genJetTable,patJetPartonsNano,genJetFlavourTable)
     process.l1tPh2NanoTask.add(genJetAK8Table,genJetAK8FlavourAssociation,genJetAK8FlavourTable)
 
     return process
 
+from PhysicsTools.NanoAOD.triggerObjects_cff import *
+def add_trig_objects(process):
+    process.l1tPh2NanoTask.add(unpackedPatTrigger)
+    process.l1tPh2NanoTask.add(triggerObjectTable)
+
 def addFullPh2L1Nano(process):
     addGenObjects(process)
     addPh2L1Objects(process)
     addPh2GTObjects(process)
     add_puppi_jets(process)
+    add_taus(process)
+    add_trig_objects(process)
 
     return process
+
+
+
 
