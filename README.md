@@ -13,8 +13,11 @@ cmsrel CMSSW_14_2_0_pre1
 cd CMSSW_14_2_0_pre1/src/
 cmsenv
 
+# customised trigger objects for Phase 2
+git cms-merge-topic ic-l1ds:14_2_0_pre1_trigobj_ph2
+
 ### ADDING NANO
-git clone git@github.com:cms-l1-dpg/Phase2-L1Nano.git PhysicsTools/L1Nano
+git clone git@github.com:ic-l1ds/Phase2-L1Nano.git PhysicsTools/L1Nano
 scram b -j 8
 ```
 
@@ -24,7 +27,7 @@ scram b -j 8
 
 In the `test` directory there is a `cmsRun` config to rerun the L1 + **(L1 Track trigger)** + the P2GT emulator and produce the nano ntuple from these outputs.
 
-Usage: `cmsRun test/V44_rerunL1wTT_cfg.py`
+Usage: `cmsRun test/L1nano_wjets.py`
 
 ### Via cmsDriver
 
